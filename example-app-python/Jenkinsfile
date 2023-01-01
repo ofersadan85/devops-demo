@@ -1,0 +1,17 @@
+pipeline {
+    agent {
+        label 'python-alpine'
+    }
+
+    triggers {
+        pollSCM('H/5 * * * *')
+    }
+
+    stages {
+        stage('Test') {
+            steps {
+                sh 'python3 example-app-python/main.py'
+            }
+        }
+    }
+}

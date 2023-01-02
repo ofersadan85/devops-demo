@@ -1,30 +1,4 @@
 services:
-  swag:
-    image: linuxserver/swag
-    container_name: swag
-    cap_add:
-      - NET_ADMIN
-    environment:
-      PUID: ${PUID}
-      GUID: ${PGID}
-      TZ: ${TZ}
-      URL: ${DOMAIN}
-      EMAIL: admin@${DOMAIN}
-      VALIDATION: dns
-      DNSPLUGIN: cloudflare
-      SUBDOMAINS: jenkins
-      ONLY_SUBDOMAINS: 'true'
-    volumes:
-      - swag:/config
-      - ./jenkins.subdomain.conf:/config/nginx/proxy-confs/jenkins.subdomain.conf
-      - ./cloudflare.ini:/config/dns-conf/cloudflare.ini
-    ports:
-      - 443:443
-      - 80:80
-    restart: unless-stopped
-    networks:
-      - jenkins
-
   jenkins:
     image: ofersadan85/jenkins-docker-master
     container_name: jenkins
@@ -33,9 +7,8 @@ services:
       JENKINS_PASS: ${JENKINS_PASS}
       JAVA_OPTS: -Djenkins.install.runSetupWizard=false
       DOCKER_TLS_CERTDIR: /certs
-    # ports:
-    #   - 8080:8080
-    #   - 50000:50000
+    ports:
+      - 8080:8080
     volumes:
       - jenkins-data:/var/jenkins_home
       - jenkins-certs:/certs/client
@@ -55,7 +28,6 @@ services:
       - jenkins
 
 volumes:
-  swag:
   jenkins-data:
   jenkins-certs:
 

@@ -1,4 +1,4 @@
-# Jenkins
+# DevOps-Demo
 
 This is a Jenkins server setup for running Jenkins on a local machine. It will run a pipeline that executes a Python script.
 
@@ -6,7 +6,7 @@ This is a Jenkins server setup for running Jenkins on a local machine. It will r
 
 [![Better Uptime Badge](https://betteruptime.com/status-badges/v1/monitor/krqy.svg)](https://betteruptime.com/?utm_source=status_badge)
 
-For demonstration purposes, this Jenkins server is working and available at [jenkins.zero-ml.com](http://jenkins.zero-ml.com). Contact me to get a username and password if you wish to inspect it.
+For demonstration purposes, this Jenkins server is working and available at [jenkins.zero-ml.com](https://jenkins.zero-ml.com). Contact me to get a username and password if you wish to inspect it.
 
 ## Requirements
 
@@ -32,13 +32,14 @@ After that, you can run the python build pipeline by accessing [localhost:8080/j
 - The host does not expose the docker socket to the Jenkins master container. Instead, this is done via `socat`. See the [docker-compose.yml](master/docker-compose.yml) file for more details. Ideally, the Jenkins master container should not have access to the docker socket at all, but this is not possible in a setting where running on local machines is needed.
 - The Jenkins server does not run its own builds as a node. Instead, it provisions temporary docker containers as nodes, as requested by the pipeline. This is much safer and does not expose the server to arbitrary malicious code in the builds.
 - The configured job only runs on pushes to the `main` branch, despite the fact that the task specifies that it should run on "merge requests". This is to prevent malicious code from being run on the server. The job can be easily modified to run on any branch, but this is not recommended.
+- The server does not expose port 50000 used for agent nodes. This is because the agents are provisioned as docker containers dynamically.
 
 ## Maintainability
 
 - The Jenkins server is built from a Dockerfile, with hardly any changes to the original, other than preloading it with plugins. This makes it very easy to maintain and update the server, after testing the updates in a staging environment.
 - Likewise, the plugins themselves are all in the minimal set of plugins that come with the typical installation of Jenkins. The only exception to this is the Docker plugin.
 - The server is easily customized through various `groovy` scripts that run on every server restart. This can be used to easily insert new jobs, security settings, users and more. See the [master's init.groovy.d](master/init.groovy.d) folder for more details.
-- It's easy to configure the server as a proper production server, see the production branch in this repository to see how I do it in [jenkins.zero-ml.com](http://jenkins.zero-ml.com).
+- It's easy to configure the server as a proper production server, see the [production branch](https://github.com/ofersadan85/devops-demo/tree/production) in this repository to see how I do it in [jenkins.zero-ml.com](http://jenkins.zero-ml.com).
 
 ## Storage
 
@@ -48,7 +49,7 @@ After that, you can run the python build pipeline by accessing [localhost:8080/j
 | ofersadan85/jenkins-agent-python-docker | Python agent image, alpine based with python installed | 461 MB |
 | alpine/socat | socat image, alpine based | 8.5 MB |
 
-As you can see, storage requirements are not very high, thanks to the use of Alpine images. This can probably be further optimized by removing some of the default plugins, but I haven't looked into it yet.
+As you can see, storage requirements are not very high, thanks to the use of Alpine images. This can probably be further optimized by removing some of the default plugins, but that would make the server less usable for other things. I haven't looked into it thoroughly yet.
 
 ## Known Issues
 

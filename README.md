@@ -1,4 +1,4 @@
-# Jenkins
+# DevOps-Demo
 
 This is a Jenkins server setup for running Jenkins on a local machine. It will run a pipeline that executes a Python script.
 

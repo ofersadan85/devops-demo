@@ -22,7 +22,7 @@ To setup this server locally, accessible at [localhost:8080](http://localhost:80
 docker-compose --env-file=example.env up -d
 ```
 
-After that, you can run the python build pipeline by accessing [localhost:8080/job/example-app-python](http://localhost:8080/job/example-app-python) and clicking on `Build Now`. Watch the build logs to see the pipeline in action. Login details are in [example.env](example.env).
+After that, you can view the Python build pipeline by accessing [localhost:8080/job/example-app-python](http://localhost:8080/job/example-app-python) (Login details are in [example.env](example.env)). No need to click anything, the pipeline is pre-configured to scan the repository every 3 minutes, just sit back and watch.
 
 ## Security
 
@@ -31,7 +31,7 @@ After that, you can run the python build pipeline by accessing [localhost:8080/j
 - The server image is built from the official Jenkins image, but provides only a frozen subset of plugins. This is to prevent the server from being compromised by malicious plugins, or compromised plugin updates. See the [master's Dockerfile](master/Dockerfile).
 - The host does not expose the docker socket to the Jenkins master container. Instead, this is done via `socat`. See the [docker-compose.yml](master/docker-compose.yml) file for more details. Ideally, the Jenkins master container should not have access to the docker socket at all, but this is not possible in a setting where running on local machines is needed.
 - The Jenkins server does not run its own builds as a node. Instead, it provisions temporary docker containers as nodes, as requested by the pipeline. This is much safer and does not expose the server to arbitrary malicious code in the builds.
-- The configured job only runs on pushes to the `main` branch, despite the fact that the task specifies that it should run on "merge requests". This is to prevent malicious code from being run on the server. The job can be easily modified to run on any branch, but this is not recommended.
+- The configured job only runs on every branch, including pull requests from forks. However, the job explicitly doesn't trust code from forks, which will make them run in groovy sandbox mode. This is to prevent malicious code from being executed on the server. See [here](master/init.groovy.d/jobs.groovy#L23) for more details.
 
 ## Maintainability
 
@@ -39,6 +39,7 @@ After that, you can run the python build pipeline by accessing [localhost:8080/j
 - Likewise, the plugins themselves are all in the minimal set of plugins that come with the typical installation of Jenkins. The only exception to this is the Docker plugin.
 - The server is easily customized through various `groovy` scripts that run on every server restart. This can be used to easily insert new jobs, security settings, users and more. See the [master's init.groovy.d](master/init.groovy.d) folder for more details.
 - It's easy to configure the server as a proper production server, see the production branch in this repository to see how I do it in [jenkins.zero-ml.com](http://jenkins.zero-ml.com).
+- Since the server is deployed via a single `docker-compose` command, it's easy to deploy it on any machine, including production servers. Moreover, it also means that any server failures are easily recoverable, as the server is almost stateless. The only data loss that can occur is the loss of the pipeline build history, which is not a big deal (and if it is, the data volume can easily be backed up to an external location).
 
 ## Storage
 

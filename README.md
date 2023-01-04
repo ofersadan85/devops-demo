@@ -4,7 +4,8 @@ This is a Jenkins server setup for running Jenkins on a local machine. It will r
 
 ## Demo production server
 
-[![Better Uptime Badge](https://betteruptime.com/status-badges/v1/monitor/krqy.svg)](https://betteruptime.com/?utm_source=status_badge)
+> **Warning**
+> The demo server has been shut down, as it was costing me money and resources and the demo period was over. It can be re-established on demand if needed.
 
 For demonstration purposes, this Jenkins server is working and available at [jenkins.zero-ml.com](https://jenkins.zero-ml.com). Contact me to get a username and password if you wish to inspect it.
 
